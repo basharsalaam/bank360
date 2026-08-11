@@ -1,0 +1,110 @@
+import time
+from datetime import datetime, timedelta
+
+from cashflow.celery import app
+from django.utils import timezone
+from django.db.models.functions import TruncMonth
+from django.db.models import F, Sum, Case, When, Count
+from django.db import transaction
+
+from psqlextra.query import ConflictAction
+
+from api.models import User, Credit, Account, Transactions
+from api.ml_model.models import tran_credit
+from api.endpoints import save_account
+from api.connect import Mono
+from api.util.initialize import Mono_Serilizers
+
+@app.task()
+def all_account():
+    users = User.objects.all()
+    for user in users:
+        if user.id != 11:
+            get_transaction(user.id)
+
+    return
+
+def condition(clause, field):
+    value = F('transactions__amount') if field else 1
+    return Sum(Case(When(transactions__tran_type=clause, then=value), default=0))
+
+@app.task()
+def get_transaction(user_id, start = timezone.make_aware(timezone.datetime.min, timezone.get_default_timezone()), acccount_id = 0):
+    tran_set = User.objects.get(id = user_id).account_set.prefetch_related('transaction')\
+        .filter(transactions__created_at__gte = start)\
+        .annotate(month = TruncMonth('transactions__tran_date'))
+    if acccount_id:
+        tran_set = tran_set.filter(id = acccount_id)
+    if tran_set.count() < 1:
+        return
+    tran_set = tran_set.values('month', 'user_id', bank_account_id = F('id')).annotate(
+        inflow = condition(True, True),
+        outflow = condition(False, True),
+        cr_vol = condition(True, False),
+        dr_vol = condition(False, False),
+        tranx_vol = Count(F('transactions__id'))
+    ).order_by('bank_account_id')
+
+    credit = tran_credit(tran_set)
+
+    saved = Credit.objects\
+        .on_conflict(('bank_account', 'month'), ConflictAction.UPDATE)\
+            .bulk_insert(credit)
+
+    return saved[-1]
+
+@app.task()
+def process_webhook(payload):
+    event = payload.pop('event')
+    if event == 'mono.events.account_updated':
+        return account_updated(payload['data'])
+    elif event == 'mono.events.account_reauthorized':
+        return account_reauthorized(payload['data'])
+
+def account_reauthorized(reauth_data):
+    account_id = reauth_data['data']['account']['_id']
+    Account.objects.filter(account_id = account_id).update(re_auth = False, re_auth_code = None)
+    Mono.account(account_id)
+
+def account_updated(account_data):
+    id = account_data['account']['_id']
+    i = 0
+    while (not Account.objects.filter(account_id = id).exists()) and i <= 30:
+        time.sleep(1)
+        i += 1
+
+    if i > 30:
+        Mono.unlink(id)
+        message = f'waited too long {id} not in database'
+        return message
+
+    accounts = Account.objects.filter(account_id = id)
+    for account in accounts:
+        account_data['instance'] = account.id
+        save_transactions.delay(account.user.id, **account_data)
+        return str(account)
+
+@app.task()
+def save_transactions(user_id, **mono_account):
+    with transaction.atomic():
+        data, account = save_account(user_id, **mono_account)
+
+        try:
+            start = Transactions.objects.filter(account = account.id).latest().tran_date.strftime('%d-%m-%Y')
+        except Transactions.DoesNotExist:
+            start = ''
+
+        trans_info = Mono.transactions(account.account_id, start)
+        trans_info['account_data'] = account
+        trans_info['user'] = user_id
+        return_tran = Mono_Serilizers.get(mono_transaction = trans_info)
+        if return_tran:
+            first_date = return_tran.tran_date
+            if start == '':
+                if return_tran.tran_type:
+                    account.initial_balance = return_tran.balance - return_tran.amount
+                else:
+                    account.initial_balance = return_tran.balance + return_tran.amount
+                account.save()
+            get_transaction.delay(user_id, first_date, account.id)
+        return data

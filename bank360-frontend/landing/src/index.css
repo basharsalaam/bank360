@@ -1,0 +1,20 @@
+:root {
+  --main-white: #ffffff;
+  --accent-white: #fafafa;
+  --theme: #67adc8;
+  --theme-hover: #418eab;
+  --text-main: #151e28;
+  --main-pad: 0 135px;
+  --main-pad-lg: 0 105px;
+  --main-pad-md: 0 85px;
+  --main-pad-sm: 0 55px;
+  --main-pad-sms: 0 32px;
+  --main-pad-xs: 0 24px;
+}
+
+html {
+  font-size: 62.5%;
+}
+body {
+  font-size: 1.6em;
+}

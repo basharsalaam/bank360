@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <input id="head" type="text" placeholder="Auth Header">
+        <input id="code" type="text" placeholder="secure code">
+        <button id="click">Submit Me</button>
+        <div id="result"></div>
+
+        <script>
+            document.querySelector('#click').addEventListener('click', (event) => {
+                fetch("https://cashflow-back.herokuapp.com/api/new/accounts/", {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "authorization": `Bearer ${document.querySelector('#head').value}`
+                    },
+                    redirect: 'follow',
+                    referrerPolicy: 'no-referrer',
+                    body: JSON.stringify({code : document.querySelector('#code').value})
+                });
+                // document.querySelector('#result').textContent = JSON.stringify(response.json())
+            })
+
+        </script>
+
+</body>
+</html>
