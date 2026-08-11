@@ -75,10 +75,15 @@ export const ConnectedBanks: FC<IConnectedBanksProps> = ({
       onLoad: () => console.log("Widget loaded successfully"),
       onSuccess: ({ code }: { code: any }) => {
         setConnecting(false);
+        if (!code) {
+          toast.error("Mono did not return an authorization code.");
+          return;
+        }
         setAdding(true);
         addNewAccount(code);
       },
       key: MONO_PUBLIC_KEY,
+      scope: "auth",
     });
 
     monoInstance.setup();

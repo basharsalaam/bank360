@@ -15,6 +15,7 @@ export const useRefresh = () => {
   const monoConnect = useMemo(() => {
     const monoInstance = new MonoConnect({
       key: MONO_PUBLIC_KEY,
+      scope: "auth",
       onSuccess: ({ code }: { code: string }) => {
         toast.success("Successfully refreshed data");
       },
