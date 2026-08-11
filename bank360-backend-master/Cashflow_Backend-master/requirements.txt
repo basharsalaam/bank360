@@ -18,7 +18,7 @@ django-cors-headers>=3.11.0
 django-environ>=0.8.1
 django-filter>=21.1
 django-heroku>=0.3.1
-django-monthfield==0.1.3
+django-monthfield @ git+https://github.com/hephhay/django-monthfield.git@43fcab0a9af7bd2feff9528edb15ca5f95294c9a
 django-postgres-extra>=2.0.6
 django-storages>=1.12.3
 djangorestframework==3.13.1
