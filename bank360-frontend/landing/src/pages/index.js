@@ -1,5 +1,10 @@
-import Home from "./Home/Home";
+import Home from "./Home/Homepage";
 import Pricing from "./Pricing/Pricing";
 import FAQ from "./FAQ/FAQ";
-
-export const Pages = { Home, Pricing, FAQ };
+import Signup from "./Sign Up/Signup";
+import Login from "./Login/Login";
+import Homepage from "./Homepage/Home";
+import Contact from "./Contact/Contact";
+import OTP from "./OTP/OTP";
+import Page404 from "./404/404";
+export const Pages = { Home, Pricing, FAQ, Signup, Login, Homepage, Contact, OTP , Page404};

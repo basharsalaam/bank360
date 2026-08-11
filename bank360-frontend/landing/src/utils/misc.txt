@@ -1,0 +1,6 @@
+ROutes needing opacity
+Login
+Reset password
+
+valid_pass = "(?=^(?:[^A-Z]*[A-Z]))(?=^(?:[^a-z]*[a-z]))(?=^(?:\D*\d))(?=^(?:\w*\W))^[A-Za-z\d\W]{8,}$"
+all date formats should be in UTC

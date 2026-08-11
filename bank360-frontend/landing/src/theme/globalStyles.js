@@ -4,7 +4,9 @@ const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
     padding: 0;
-    font-family: Inter, Helvetica, Sans-Serif;
+    font-family: "Outfit", serif;
+    font-optical-sizing: auto;
+    font-style: normal;
     transition: 0.5s ease;
   }
 
@@ -33,18 +35,18 @@ const GlobalStyle = createGlobalStyle`
   }
 
   .main-wrapper {
-    padding: var(--main-pad);
+    padding: 10rem;
 
     @media (max-width: 1320px) {
-      padding: var(--main-pad-lg);
+      padding: 10rem;
     }
 
     @media (max-width: 1024px) {
-      padding: var(--main-pad-md);
+      padding: 10rem;
     }
 
     @media (max-width: 800px) {
-      padding: var(--main-pad-sm);
+      padding: 10rem;
     }
 
     @media (max-width: 640px) {

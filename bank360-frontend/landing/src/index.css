@@ -1,8 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
 :root {
   --main-white: #ffffff;
   --accent-white: #fafafa;
   --theme: #67adc8;
   --theme-hover: #418eab;
+  --theme-hover-secondary: ;
   --text-main: #151e28;
   --main-pad: 0 135px;
   --main-pad-lg: 0 105px;

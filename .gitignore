@@ -27,6 +27,7 @@ db.sqlite3
 # Node
 node_modules/
 build/
+*.zip
 client/node_modules/
 
 # OS
