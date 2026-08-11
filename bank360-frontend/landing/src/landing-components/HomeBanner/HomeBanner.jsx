@@ -2,7 +2,6 @@
 import React from 'react';
 import Marquee from "react-fast-marquee";
 import { HomeBannerStyles } from "./style";
-import { Link } from "react-router-dom";
 import background from "./../../assets/images/background.png";
 import hero from "./../../assets/images/hero_main.png";
 import access from "./../../assets/icons/BankLogos/access.png";
@@ -20,7 +19,7 @@ import moniepoint from "./../../assets/icons/BankLogos/moniepoint.png";
 import wema from "./../../assets/icons/BankLogos/wema.png";
 import jaiz from "./../../assets/icons/BankLogos/jaiz.png";
 
-const { Wrapper, HeaderText, SubHeaderText, FieldSet, LearnMoreButton } = HomeBannerStyles;
+const { Wrapper } = HomeBannerStyles;
 
 const divStyle = {
   backgroundImage: `url(${background})`,
@@ -35,22 +34,22 @@ const HomeBanner = () => {
     <Wrapper className="main-wrapper" style={divStyle}>
       <section >
         <aside>
-          <HeaderText data-aos="fade-up">
+          <h1 data-aos="fade-up">
           Clear and Simple Financial Management
-          </HeaderText>
-          <SubHeaderText data-aos="fade-up">
+          </h1>
+          <p data-aos="fade-up">
             Effortlessly connect all your bank accounts in one secure platform to track balances, monitor transactions, and gain insights into your spending habits in real-time.
-          </SubHeaderText>
-          <FieldSet className="btn-group">
-            <Link to="https://app.bank360.ng">
-              <a href="#" class="cta" data-aos="fade-up">Get Started →</a>
-            </Link>
+          </p>
+          <div className="btn-group">
+            <a href="https://app.bank360.ng" className="cta" data-aos="fade-up">
+              Get Started →
+            </a>
             {/* <Link to="/contact">
               <button className="contact-btn" data-aos="fade-up">
                 Login
               </button>
             </Link> */}
-          </FieldSet>
+          </div>
         </aside>
         <div className='hero'>
           <img className='hero' src={hero} alt="" />
