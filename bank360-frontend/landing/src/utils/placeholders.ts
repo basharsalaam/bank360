@@ -31,6 +31,10 @@ export const bankOptions: ISelectOption[] = [
 
 export const dateOptions: ISelectOption[] = [
     {
+        label: "All time",
+        value: "All time",
+    },
+    {
         label: "Last 7 days",
         value: "Last 7 days",
     },
@@ -64,6 +68,12 @@ export const dateOptionsMeaning: () => {
     const currentDate = new Date();
 
     return {
+        "All time": {
+            date: `${currentDate.getFullYear()}`,
+            duration: 100,
+            size: 1,
+            distance: "all available history",
+        },
         "Last 7 days": {
             date: `${currentDate.getFullYear()},${
                 currentDate.getMonth() + 1
@@ -116,6 +126,12 @@ export const dateOptionsGraphMeaning: () => {
     const currentDate = new Date();
 
     return {
+        "All time": {
+            date: `${currentDate.getFullYear()}`,
+            duration: 100,
+            size: 1,
+            distance: "all available history",
+        },
         "Last 7 days": {
             date: `${currentDate.getFullYear()},${
                 currentDate.getMonth() + 1

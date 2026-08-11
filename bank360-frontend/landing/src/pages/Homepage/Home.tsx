@@ -35,6 +35,7 @@ import { monoImport } from "./mono-import";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { numberWithCommas } from "../../utils/helpers";
+import { markMonoSyncPending } from "../../utils/mono-sync";
 
 
 const Home = () => {
@@ -260,7 +261,8 @@ const Home = () => {
     addAccount({ accessToken: access, code })
       .unwrap()
       .then((res) => {
-        toast.success("Account successfully added.");
+        markMonoSyncPending(res.account_id);
+        toast.success("Account connected. Transactions are syncing.");
         getBalance();
 
         updateListOfBanks();
@@ -293,10 +295,15 @@ const Home = () => {
       onLoad: () => console.log("Widget loaded successfully"),
       onSuccess: ({ code }: { code: any }) => {
         setConnecting(false);
+        if (!code) {
+          toast.error("Mono did not return an authorization code.");
+          return;
+        }
         setAdding(true);
         addNewAccount(code);
       },
       key: MONO_PUBLIC_KEY,
+      scope: "auth",
     });
 
     monoInstance.setup();

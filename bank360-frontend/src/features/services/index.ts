@@ -358,7 +358,7 @@ export const cashflowApi = createApi({
       {
         accessToken: string;
         params: {
-          date: string;
+          date?: string;
           duration?: number;
           size?: number;
           currency: string;
@@ -420,7 +420,7 @@ export const cashflowApi = createApi({
       {
         accessToken: string;
         params: {
-          date: string;
+          date?: string;
           duration?: number;
           size?: number;
           currency: string;

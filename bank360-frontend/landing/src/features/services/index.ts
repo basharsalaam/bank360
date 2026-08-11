@@ -49,10 +49,7 @@ const baseQueryWithReauth: BaseQueryFn<
     };
 
     try {
-      const response = await fetch(
-        "https://cash-flow-project.herokuapp.com/api/token/refresh/",
-        requestOptions
-      );
+      const response = await fetch(`${API_URL}token/refresh/`, requestOptions);
       const res = await response.json();
       await (api.dispatch as AppDispatch)(
         updateTokens({
@@ -358,7 +355,7 @@ export const cashflowApi = createApi({
       {
         accessToken: string;
         params: {
-          date: string;
+          date?: string;
           duration?: number;
           size?: number;
           currency: string;
@@ -420,7 +417,7 @@ export const cashflowApi = createApi({
       {
         accessToken: string;
         params: {
-          date: string;
+          date?: string;
           duration?: number;
           size?: number;
           currency: string;

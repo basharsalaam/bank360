@@ -24,6 +24,7 @@ import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import { useAppDispatch } from "../../../app/hooks";
 import { updateBankList } from "../../../features/finData/finData.slice";
+import { markMonoSyncPending } from "../../../utils/mono-sync";
 
 export const ConnectedBanks: FC<IConnectedBanksProps> = ({
   selectedDate,
@@ -51,7 +52,8 @@ export const ConnectedBanks: FC<IConnectedBanksProps> = ({
     addAccount({ accessToken: access, code })
       .unwrap()
       .then((res) => {
-        toast.success("Account successfully added.");
+        markMonoSyncPending(res.account_id);
+        toast.success("Account connected. Transactions are syncing.");
         updateListOfBanks();
         updateAccounts();
       })

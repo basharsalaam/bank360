@@ -24,7 +24,12 @@ export const BREAKPOINTS = {
   xl: 1200,
 };
 
-export const API_URL = "https://cashflow-back.herokuapp.com/api/";
+const configuredApiUrl =
+  process.env.REACT_APP_API_URL || "http://localhost:8000/api/";
+
+export const API_URL = configuredApiUrl.endsWith("/")
+  ? configuredApiUrl
+  : `${configuredApiUrl}/`;
 
 export const API_URL_not_used =
   "http://cashflow-backend.eu-west-2.elasticbeanstalk.com/api/";
@@ -38,7 +43,6 @@ export const ACCESS_TOKEN_EXPIRY_TIME_IN_MINS = 45 - 1;
 // 1 day in minutes
 export const XCHANGE_RATE_EXPIRY_TIME_IN_MINS = 1440 - 1;
 
-const TEST_KEY = "test_pk_CMyIzC5mZLdWlWZ2J6Ro";
-const LIVE_KEY = "live_pk_K9ehRFDq5nlJVHRp4GvS";
-export const MONO_PUBLIC_KEY = LIVE_KEY;
+export const MONO_PUBLIC_KEY =
+  process.env.REACT_APP_MONO_PUBLIC_KEY || "test_pk_ys5zw74pmxxe8v1ojoyk";
 export const INPUT_DEBOUNCING_TIME_IN_MS = 1200;

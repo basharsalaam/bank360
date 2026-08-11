@@ -40,7 +40,7 @@ import {
   numberWithCommas,
 } from "../../utils/helpers";
 import { formatDate } from "../../utils/helpers/display";
-import { LoaderIcon } from "react-hot-toast";
+import toast from "react-hot-toast";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useGetCurrencySymbol } from "../../hooks/finUtils/useGetCurrencySymbol";
 import { useGetComparedAmount } from "../../hooks/finUtils/useGetComparedData";
@@ -48,6 +48,10 @@ import { useGetGraphData } from "../../hooks/finUtils/useGetGraphData";
 import { useGetListOfTransactions } from "../../hooks/finUtils/useGetListOfTransactions";
 import { useGetBanks } from "../../hooks/finUtils/useGetBanks";
 import Loader from "../../components/Loader/Loader";
+import {
+  clearPendingMonoSync,
+  getPendingMonoSync,
+} from "../../utils/mono-sync";
 
 const Dashboard = () => {
   const [selectedBanks, setSelectedBanks] = useState<ISelectOption[]>([]);
@@ -58,8 +62,8 @@ const Dashboard = () => {
     value: "",
   });
   const [selectedDate, setSelectedDate] = useState<ISelectOption>({
-    label: "Last 7 days",
-    value: "Last 7 days",
+    label: "All time",
+    value: "All time",
   });
   const dispatch = useAppDispatch();
   const finData: any = useGetFinData();
@@ -137,12 +141,56 @@ const Dashboard = () => {
     element,
     more,
   });
+  const [checkSyncedTransactions] = useGetTransactionsListMutation();
 
   useEffect(() => {
-    getComparedAmount();
-    getGraphData();
-    getListOfTransactions();
-  }, []);
+    const pendingSync = getPendingMonoSync();
+    if (!pendingSync || !access || !selectedCurrency.value) return;
+
+    let stopped = false;
+    let intervalId: number | undefined;
+
+    const stopPolling = () => {
+      stopped = true;
+      if (intervalId !== undefined) window.clearInterval(intervalId);
+    };
+
+    const pollForTransactions = () => {
+      const currentSync = getPendingMonoSync();
+      if (!currentSync) {
+        stopPolling();
+        return;
+      }
+
+      checkSyncedTransactions({
+        accessToken: access,
+        params: {
+          currency: selectedCurrency.value,
+          account_id: currentSync.accountId,
+          paginate: "false",
+        },
+      })
+        .unwrap()
+        .then((res) => {
+          const results = Array.isArray(res) ? res : res.results || [];
+          if (!stopped && results.length > 0) {
+            clearPendingMonoSync();
+            stopPolling();
+            getListOfTransactions();
+            getGraphData();
+            getComparedAmount();
+            toast.success("Your linked account transactions are ready.");
+          }
+        })
+        .catch((err) => console.error("Transaction sync check failed", err));
+    };
+
+    pollForTransactions();
+    intervalId = window.setInterval(pollForTransactions, 5000);
+
+    return stopPolling;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [access, selectedCurrency.value]);
 
   return (
     <DashboardStyle>
@@ -178,14 +226,6 @@ const Dashboard = () => {
               inputPlaceholder="Search bank"
               multipleHandleChange={(newSelected: ISelectOption[]) => {
                 setSelectedBanks((prev) => newSelected);
-                getListOfTransactions(
-                  undefined,
-                  undefined,
-                  undefined,
-                  newSelected
-                );
-                getGraphData();
-                getComparedAmount(undefined, newSelected);
               }}
               multiple={true}
               multipleSelected={selectedBanks}
@@ -205,9 +245,6 @@ const Dashboard = () => {
               width="164px"
               handleChange={({ label, value }) => {
                 setSelectedCurrency({ label, value });
-                getListOfTransactions();
-                getGraphData();
-                getComparedAmount();
               }}
               selected={selectedCurrency}
             />
@@ -217,9 +254,6 @@ const Dashboard = () => {
               width="164px"
               handleChange={({ label, value }) => {
                 setSelectedDate((prev) => ({ label, value }));
-                getListOfTransactions(undefined, undefined, value);
-                getGraphData(value);
-                getComparedAmount(value);
               }}
               selected={selectedDate}
               options={dateOptions}

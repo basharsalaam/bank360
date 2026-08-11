@@ -94,8 +94,8 @@ const BankStatements = () => {
   }, []);
 
   const [selectedDate, setSelectedDate] = useState<ISelectOption>({
-    label: "Last 7 days",
-    value: "Last 7 days",
+    label: "All time",
+    value: "All time",
   });
 
   // pagination bounds
@@ -109,12 +109,6 @@ const BankStatements = () => {
   const [selectedStatements, setSelectedStatements] = useState<number[]>([]);
   const [chosenBanks, setChosenBanks] = useState<ISelectOption[]>([]);
 
-  // !NONSENSE
-  let details = {
-    email: "emmanuelstephen024@gmail.com",
-    password: "Mobols*2000",
-  };
-  const host = "https://cashflow-back.herokuapp.com/api/";
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // async function download_data() {
   //   let [head, table, pdf_table] = await get_data();

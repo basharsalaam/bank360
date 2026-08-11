@@ -42,17 +42,17 @@ export const useGetListOfTransactionsAmount = ({
       }));
     }
 
+    const selectedDateRange = (date || selectedDate.value) as string;
+    const dateRange = dateOptionsGraphMeaning()[selectedDateRange];
+    const isAllTime = selectedDateRange === "All time";
+
     // Get transactions function
     getTransactions({
       accessToken: access,
       params: {
-        date: dateOptionsGraphMeaning()[(date || selectedDate.value) as string]
-          .date,
-        duration:
-          dateOptionsGraphMeaning()[(date || selectedDate.value) as string]
-            .duration,
-        size: dateOptionsGraphMeaning()[(date || selectedDate.value) as string]
-          .size,
+        date: isAllTime ? undefined : dateRange.date,
+        duration: isAllTime ? undefined : dateRange.duration,
+        size: isAllTime ? undefined : dateRange.size,
         currency: currency || selectedCurrency.value,
         bank_name: selectedBanks
           ? (banks || selectedBanks).map((bank) => bank.value).join(",")
@@ -64,9 +64,11 @@ export const useGetListOfTransactionsAmount = ({
         categories,
         tran_type,
       },
-    })
+      })
       .unwrap()
       .then((res) => {
+        const results = Array.isArray(res) ? res : res.results || [];
+        const count = Array.isArray(res) ? res.length : res.count;
         setLoadingTransactions(false);
 
         // if infinite update,
@@ -74,13 +76,13 @@ export const useGetListOfTransactionsAmount = ({
           setPage(newPage as number);
           setScrollState((prev) => ({ ...prev, loading: false }));
           // add new response to old transactions
-          setTransactions((prev) => [...prev, ...res.results]); // check if there is more
+          setTransactions((prev) => [...prev, ...results]); // check if there is more
         } else {
-          setTransactions((prev) => res.results);
+          setTransactions((prev) => results);
           // start from scratch
           setPage(1);
         }
-        setTransactionCount((prev) => Number(res.count));
+        setTransactionCount((prev) => Number(count));
       })
       .catch((err) => {
         // getListOfTransactions();

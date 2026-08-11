@@ -41,11 +41,12 @@ export const fetchAccountList = ({
     },
   })
     .unwrap()
-    .then((res: IPaginatedAccountResponse) => {
-      setCount && setCount(res.count);
+    .then((res: IPaginatedAccountResponse | IAccount[]) => {
+      const accounts = Array.isArray(res) ? res : res.results || [];
+      setCount && setCount(Array.isArray(res) ? accounts.length : res.count);
 
       setAccountList((prev) =>
-        res.results?.map((item: IAccount) => ({
+        accounts.map((item: IAccount) => ({
           bankName: item.bank_name,
           bankIcon: getBankIcon({
             bankList,

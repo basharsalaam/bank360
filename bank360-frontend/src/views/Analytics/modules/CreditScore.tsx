@@ -15,6 +15,7 @@ import { useGetTokens } from "../../../hooks/getDataFromStore/getDataFromState";
 import { MONO_PUBLIC_KEY } from "../../../utils/constants";
 import { formatCreditScoreDate } from "../../../utils/helpers/display";
 import { getRecommendedLimits } from "../../../utils/helpers/get-recommended-limits";
+import { markMonoSyncPending } from "../../../utils/mono-sync";
 import { monoImport } from "../../Home/mono-import";
 import { AnalyticsHeader } from "./AnalyticsHeader";
 
@@ -31,7 +32,8 @@ export const CreditScore: FC<ICreditScoreProps> = ({
     addAccount({ accessToken: access, code })
       .unwrap()
       .then((res) => {
-        toast.success("Account successfully added.");
+        markMonoSyncPending(res.account_id);
+        toast.success("Account connected. Transactions are syncing.");
         navigate("/settings?tab=2");
         // updateListOfBanks();
         // updateAccounts();
