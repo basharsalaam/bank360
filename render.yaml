@@ -53,10 +53,7 @@ services:
       - key: PYTHON_VERSION
         value: 3.9.13
       - key: SECRET_KEY
-        fromService:
-          name: bank360-api
-          type: web
-          property: SECRET_KEY
+        sync: false
       - key: DEBUG
         value: "False"
       - key: db_HOST
@@ -78,10 +75,7 @@ services:
       - key: MONO_SEC_KEY
         value: test_sk_c4kmpkwyx37p288mobe9
       - key: MONO_WEBKOOK_SECRET
-        fromService:
-          name: bank360-api
-          type: web
-          property: MONO_WEBKOOK_SECRET
+        sync: false
       - key: PUBLIC_KEY
         sync: false
       - key: PRIVATE_KEY
