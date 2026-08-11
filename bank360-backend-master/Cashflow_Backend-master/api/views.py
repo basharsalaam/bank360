@@ -19,9 +19,9 @@ from api.models import Account, User, Category, Transactions, TimePass, Credit
 from api.filter import AccountFilter, TransactionFilter
 from api.connect import Mono
 from api.endpoints import Mixins, save_account
+from api.tasks import save_transactions, transactions_are_available
 from api.util.misc import otpcheck, date_split
 from api.util.pagination import CustomPageNumberPagination
-from api.tasks import save_transactions
 
 
 # Create your views here.
@@ -142,9 +142,14 @@ class AccountView(AnalyticsView, mixins.CreateModelMixin):
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
             mono_account = kwargs['mono_account']
-            if Account.objects.filter(account_id = mono_account['account']['_id']).exists() and kwargs['type'] == 'new':
-                save_transactions.delay(request.user.id, **mono_account)
-            data, _ = save_account(request.user.id, **mono_account)
+            data, account = save_account(request.user.id, **mono_account)
+            if transactions_are_available(mono_account):
+                transaction_payload = {**mono_account, 'instance': account.id}
+                transaction.on_commit(
+                    lambda: save_transactions.delay(
+                        request.user.id, **transaction_payload
+                    )
+                )
         headers = self.get_success_headers(data)
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 

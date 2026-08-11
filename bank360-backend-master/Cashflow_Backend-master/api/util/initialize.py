@@ -1,5 +1,6 @@
-from datetime import datetime
 from itertools import count
+
+from django.utils.dateparse import parse_datetime
 
 from api.serilizers import AccountSerializer
 from api.models import Account, Category, Transactions
@@ -17,6 +18,7 @@ class Mono_Serilizers:
         mono_meta = info['meta']
         mono_account = info['account']
         mono_bank = mono_account['institution']
+        data_status = str(mono_meta.get('data_status', 'PROCESSING')).upper()
         account_instance_id = info.pop('instance', None)
         account_instance = None if not account_instance_id else Account.objects.get(id = account_instance_id)
         serializer = AccountSerializer(instance=account_instance, data={
@@ -30,7 +32,7 @@ class Mono_Serilizers:
             'bank_name' : mono_bank['name'],
             'institution_type' : mono_bank.pop('type', None),
             're_auth' : False,
-            'status' : AccountStatus(mono_meta['data_status']),
+            'status' : AccountStatus(data_status),
             'auth_method' : True if mono_meta['auth_method'] == 'internet_banking' else False
         })
 
@@ -42,8 +44,11 @@ class Mono_Serilizers:
     @staticmethod
     def mono_transaction(trans_info):
 
-        data = trans_info['data']
-        narrations = [value['narration'] for value in data]
+        data = trans_info.get('data') or []
+        if isinstance(data, dict):
+            data = data.get('transactions') or []
+
+        narrations = [value.get('narration', '') for value in data]
         channel_result = tran_classification(narrations, channel_model, channels)
         category_result = tran_classification(narrations, category_model, categories)
 
@@ -62,26 +67,29 @@ class Mono_Serilizers:
                     else:
                         balance = tran_list[i].balance + tran_list[i].amount
 
+            transaction_id = line.get('_id') or line.get('id')
+            transaction_date = parse_datetime(line['date'])
+            if not transaction_id or transaction_date is None:
+                continue
+
             transaction = Transactions(
-                uuid = line['_id'],
+                uuid = transaction_id,
                 account = trans_info['account_data'],
                 tran_type = True if line['type'] == 'credit' else False,
                 amount = line['amount'],
                 balance = balance,
                 auto_category = None if not 'category' in line.keys() else line['category'],
-                category = category_list[cat],
+                category = category_list.get(cat) or category_list['Others'],
                 channels = chan,
-                narration = line['narration'],
-                tran_date = datetime.strptime(line['date'], '%Y-%m-%dT%H:%M:%S.%f%z')
+                narration = line.get('narration', ''),
+                tran_date = transaction_date
             )
 
             tran_list.append(transaction)
 
-        print(tran_list)
-
         Transactions.objects.bulk_create(tran_list, 1000, ignore_conflicts=True)
 
-        first_tran = None if not data else tran_list[-1]
+        first_tran = None if not tran_list else tran_list[-1]
         return first_tran
 
     @staticmethod

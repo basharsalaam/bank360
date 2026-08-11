@@ -55,7 +55,7 @@ def get_transaction(user_id, start = timezone.make_aware(timezone.datetime.min, 
 
 @app.task()
 def process_webhook(payload):
-    event = payload.pop('event')
+    event = payload.get('event')
     if event == 'mono.events.account_updated':
         return account_updated(payload['data'])
     elif event == 'mono.events.account_reauthorized':
@@ -66,8 +66,20 @@ def account_reauthorized(reauth_data):
     Account.objects.filter(account_id = account_id).update(re_auth = False, re_auth_code = None)
     Mono.account(account_id)
 
+def transactions_are_available(account_data):
+    meta = account_data.get('meta') or {}
+    status = str(meta.get('data_status', '')).upper()
+    retrieved_data = meta.get('retrieved_data') or []
+    return status == 'AVAILABLE' or (
+        status == 'PARTIAL' and 'transactions' in retrieved_data
+    )
+
 def account_updated(account_data):
-    id = account_data['account']['_id']
+    account_info = account_data.get('account') or {}
+    id = account_info.get('_id') or account_info.get('id')
+    if not id:
+        return 'account id missing from webhook'
+
     i = 0
     while (not Account.objects.filter(account_id = id).exists()) and i <= 30:
         time.sleep(1)
@@ -79,10 +91,16 @@ def account_updated(account_data):
         return message
 
     accounts = Account.objects.filter(account_id = id)
+    updated_accounts = []
     for account in accounts:
-        account_data['instance'] = account.id
-        save_transactions.delay(account.user.id, **account_data)
-        return str(account)
+        current_account_data = {**account_data, 'instance': account.id}
+        if transactions_are_available(account_data):
+            save_transactions.delay(account.user.id, **current_account_data)
+        else:
+            save_account(account.user.id, **current_account_data)
+        updated_accounts.append(str(account))
+
+    return updated_accounts
 
 @app.task()
 def save_transactions(user_id, **mono_account):

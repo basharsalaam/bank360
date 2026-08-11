@@ -1,3 +1,5 @@
+from secrets import compare_digest
+
 from cashflow import settings
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -10,8 +12,10 @@ from api.tasks import process_webhook
 @authentication_classes([])
 @permission_classes([])
 def mono_webhook(request):
-    if request.headers['mono-webhook-secret'] != settings.MONO_WEBKOOK_SECRET:
+    supplied_secret = request.headers.get('mono-webhook-secret', '')
+    if not settings.MONO_WEBHOOK_SECRET or not compare_digest(
+        supplied_secret, settings.MONO_WEBHOOK_SECRET
+    ):
         raise NotAuthenticated('Invalid Key was provided')
-    process_webhook.delay(request.data)
-    print(request.data)
+    process_webhook.delay(dict(request.data))
     return Response({'message': 'OK'})

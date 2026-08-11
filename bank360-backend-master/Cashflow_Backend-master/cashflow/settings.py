@@ -183,7 +183,10 @@ AUTH_PASSWORD_VALIDATORS = (
 )
 
 MONO_SEC_KEY = env('MONO_SEC_KEY')
-MONO_WEBKOOK_SECRET = env('MONO_WEBKOOK_SECRET')
+MONO_WEBHOOK_SECRET = env(
+    'MONO_WEBHOOK_SECRET',
+    default=env('MONO_WEBKOOK_SECRET', default=''),
+)
 
 LANGUAGE_CODE = 'en-us'
 
@@ -220,9 +223,9 @@ CORS_ALLOWED_ORIGINS = env('CORS_ALLOWED_ORIGINS', default='http://localhost:300
 # AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='')
 # AWS_QUERYSTRING_AUTH = False
 
-# Celery settings - using local Redis for development
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# Celery uses local Redis in development and Render Key Value in production.
+CELERY_BROKER_URL = env('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
-CELERY_RESULT_BACKEND = 'cache'
-CELERY_CACHE_BACKEND = 'memory'
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
