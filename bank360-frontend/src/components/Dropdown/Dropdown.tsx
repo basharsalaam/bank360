@@ -1,9 +1,9 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
 import { Icons } from "../../assets/Icons";
 import { listenForOutsideClicks } from "../../hooks/display";
 import { DropdownStyle } from "./style";
 
-export const DropdownComp: FC = ({ children }) => {
+export const DropdownComp: FC<PropsWithChildren> = ({ children }) => {
     const menuRef = useRef(null);
     const [listening, setListening] = useState(false);
     const [isOpen, setIsOpen] = useState(false);

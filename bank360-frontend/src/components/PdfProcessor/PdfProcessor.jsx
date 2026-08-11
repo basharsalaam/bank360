@@ -1,6 +1,5 @@
 import { ModalComp } from "../ModalComp/ModalComp";
 import { PdfProcessorContainer } from "./style";
-import ReactToPdf from "react-to-pdf";
 import React from "react";
 import { Pdf } from "../DownloadPdf/DownloadPdf";
 

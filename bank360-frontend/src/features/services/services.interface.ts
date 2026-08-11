@@ -6,7 +6,7 @@ export interface IPostUser {
     org_name?: string;
     password?: string;
     photo?: string;
-    time_pass: string;
+    time_pass?: string;
 }
 
 export interface IAccount {

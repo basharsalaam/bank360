@@ -1,4 +1,5 @@
 export interface ISelectProps {
+  children?: React.ReactNode;
   placeholder: string | JSX.Element;
   name?: string;
   width?: string;

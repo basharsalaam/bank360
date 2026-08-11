@@ -1,9 +1,9 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import { Link } from "react-router-dom";
 import { Icons } from "../../assets/Icons";
 import { AuthLayoutStyle } from "./AuthLayout.style";
 
-const AuthLayout: FC = ({ children }) => {
+const AuthLayout: FC<PropsWithChildren> = ({ children }) => {
     return (
         <AuthLayoutStyle>
             <section className="left">

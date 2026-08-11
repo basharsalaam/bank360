@@ -12,9 +12,9 @@ const DownloadPdf = () => {
   return (
     <div>
       <PDFDownloadLink document={<MyDoc />} fileName="somename.pdf">
-        {({ blob, url, loading, error }) =>
-          loading ? "Loading document..." : "Download now!"
-        }
+        {({ blob, url, loading, error }) => (
+          <span>{loading ? "Loading document..." : "Download now!"}</span>
+        )}
       </PDFDownloadLink>
     </div>
   );

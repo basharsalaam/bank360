@@ -25,7 +25,7 @@ Font.register({
   fonts: [
     {
       src: InterRegular,
-      fontWeight: "regular",
+      fontWeight: 400,
     },
     {
       src: InterMedium,
@@ -55,7 +55,7 @@ const DownloadButton: FC<IProps> = ({ head, table }) => {
       >
         {({ blob, url, loading, error }) =>
           loading ? (
-            "Loading document..."
+            <span>Loading document...</span>
           ) : (
             <button className="filled-btn">Download</button>
           )

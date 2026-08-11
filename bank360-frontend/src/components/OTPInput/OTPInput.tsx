@@ -11,11 +11,10 @@ const OTPInput: FC<IOTPInputProps> = ({ placeholder, handleChange, value }) => {
                 value={value}
                 onChange={handleChange}
                 numInputs={OTP_NUMBER_OF_INPUTS}
-                // separator={<span>-</span>}
                 containerStyle={"otp-container"}
                 inputStyle={"otp-input"}
-                isInputNum={true}
-                isInputSecure={true}
+                inputType="password"
+                renderInput={(inputProps) => <input {...inputProps} />}
             />
         </OTPInputStyle>
     );

@@ -12,5 +12,6 @@ export const EmptyGraph: FC<IProps> = ({ children }) => {
 };
 
 interface IProps {
+  children?: React.ReactNode;
   text?: JSX.Element;
 }
