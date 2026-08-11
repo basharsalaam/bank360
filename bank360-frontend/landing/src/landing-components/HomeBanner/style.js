@@ -1,142 +1,166 @@
 import styled from "styled-components";
 
 const Wrapper = styled.section`
-  padding-top: 16px !important;
-  padding-bottom: 8px !important;
+  padding: 16px 0 8px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   text-align: center;
   margin: 0;
   position: relative;
+  overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: rgba(0, 0, 0, 0.3);
-    z-index: 1;
+    z-index: 0;
   }
 
   > * {
     position: relative;
-    z-index: 2;
+    z-index: 1;
+  }
+
+  section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 6vw 32px;
+    text-align: left;
+  }
+
+  aside {
+    flex: 1 1 52%;
+  }
+
+  h1 {
+    color: #fff;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    line-height: 1.05;
+    margin: 0 0 20px;
+  }
+
+  aside > p {
+    color: rgba(255, 255, 255, 0.88);
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.6;
+    max-width: 680px;
+    margin: 0 0 28px;
+  }
+
+  .btn-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;
+    border-radius: 999px;
+    background: #01a0c6;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 160ms ease, transform 160ms ease;
+  }
+
+  .cta:hover {
+    background: #0786a5;
+    transform: translateY(-2px);
+  }
+
+  .hero {
+    flex: 0 1 44%;
+    max-width: 560px;
+    width: 100%;
+    height: auto;
   }
 
   .bottom-text {
-    margin-top: 1rem;
-    margin-bottom: -1rem;
-
-const FieldSet = styled.fieldset
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: flex-start;
-  
-  a {
-    text-decoration: none;
-
-    @media screen and (max-width: 820px) {
-      margin: 0px auto;
-    }
-  }
-
-  button {
-    font-weight: 700;
-    font-size: 1.4rem;
-    line-height: 21px;
-    padding: 12px 18px;
-    border-radius: 8px;
     width: 100%;
+    margin: 16px auto 0;
+    overflow: hidden;
   }
 
-  .register-btn {
-    color: var(--main-white);
-    background: var(--button-bg, #01a0c6);
-    font-weight: 500;
-    font-size: 1.8rem;
-    line-height: 1.2;
-    padding: 20px 30px;
-    border-radius: 3.5rem;
-    margin: 1rem auto;
-    width: max-content;
+  .bottom-text > p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.9rem;
+    margin: 0 0 12px;
     text-align: center;
-    transition: all 0.3s ease-in-out;
-
-  &:hover {
-    background-color: var(--theme-hover);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
-  &:focus {
-    outline: 2px solid var(--theme-hover);
-    outline-offset: 4px;
+  .bottom-text .rfm-marquee-container {
+    width: 100%;
+    overflow: hidden;
   }
 
-  @media screen and (max-width: 1200px) {
-    padding: 18px 26px;
-    font-size: 1.6rem;
+  .marquee-content {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    width: max-content;
+    padding: 8px 24px 16px;
   }
 
-  @media screen and (max-width: 1000px) {
-    padding: 16px 24px;
+  .marquee-content img {
+    display: block;
+    flex: 0 0 auto;
+    width: 108px;
+    height: 42px;
+    object-fit: contain;
+    opacity: 0.95;
   }
 
-  @media screen and (max-width: 900px) {
-    padding: 14px 20px;
-    font-size: 1.4rem;
-    border-radius: 4rem;
+  .marquee-content .access,
+  .marquee-content .first-bank,
+  .marquee-content .fcmb,
+  .marquee-content .gtbank,
+  .marquee-content .uba,
+  .marquee-content .kuda,
+  .marquee-content .opay,
+  .marquee-content .piggyvest,
+  .marquee-content .wema,
+  .marquee-content .stanbic,
+  .marquee-content .moniepoint {
+    width: 116px;
   }
 
-  @media screen and (max-width: 260px) {
-    padding: 5px 1px;
-    font-size: 0.6rem;
-    border-radius: 2rem;
-    width: 50px;
-  }
-    }
-}
-
-
-  .login-btn {
-    color: var(--main-white);
-    background: var(--theme);
-    font-weight: 700;
-    font-size: 1.4rem;
-    line-height: 21px;
-    padding: 12px 18px;
-    border-radius: 8px;
-
-    &:hover {
-      background-color: var(--theme-hover);
-    }
+  .marquee-content .zenith-bank,
+  .marquee-content .ecobank,
+  .marquee-content .jaiz {
+    width: 100px;
   }
 
-  .contact-btn {
-    color: var(--text-main);
-    border: 1px solid #dadae7;
-    margin-top: 16px;
-
-    &:hover {
-      border-color: var(--text-main);
-    }
-  }
-
-  @media screen and (min-width: 420px) {
-    flex-direction: row;
-
-    button {
-      width: auto;
+  @media (max-width: 800px) {
+    section {
+      flex-direction: column;
+      padding: 40px 24px 24px;
+      text-align: center;
     }
 
-    .contact-btn {
-      margin-top: 0;
-      margin-left: 16px;
+    aside > p {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-group {
+      justify-content: center;
+    }
+
+    .hero {
+      flex-basis: auto;
+      max-width: 480px;
+    }
+
+    .marquee-content {
+      gap: 28px;
     }
   }
 `;
 
-export const HomeBannerStyles = {
-  Wrapper
-};
+export const HomeBannerStyles = { Wrapper };
