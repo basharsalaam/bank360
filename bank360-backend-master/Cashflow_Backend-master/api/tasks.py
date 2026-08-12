@@ -102,10 +102,27 @@ def account_updated(account_data):
 
     return updated_accounts
 
-@app.task()
-def save_transactions(user_id, **mono_account):
+@app.task(bind=True, max_retries=20)
+def save_transactions(self, user_id, **mono_account):
     with transaction.atomic():
-        data, account = save_account(user_id, **mono_account)
+        account_id = mono_account.get('account', {}).get('_id')
+        instance_id = mono_account.get('instance')
+        if instance_id:
+            account = Account.objects.get(id=instance_id)
+            account_data = Mono.account(account.account_id)
+            account_data['instance'] = account.id
+        elif account_id:
+            account_data = Mono.account(account_id)
+        else:
+            raise ValueError('Mono account ID is required to save transactions')
+
+        if not transactions_are_available(account_data):
+            raise self.retry(
+                exc=RuntimeError('Mono account transactions are still processing'),
+                countdown=30,
+            )
+
+        data, account = save_account(user_id, **account_data)
 
         try:
             start = Transactions.objects.filter(account = account.id).latest().tran_date.strftime('%d-%m-%Y')
@@ -113,6 +130,11 @@ def save_transactions(user_id, **mono_account):
             start = ''
 
         trans_info = Mono.transactions(account.account_id, start)
+        if not trans_info.get('data'):
+            raise self.retry(
+                exc=RuntimeError('Mono returned no transactions yet'),
+                countdown=30,
+            )
         trans_info['account_data'] = account
         trans_info['user'] = user_id
         return_tran = Mono_Serilizers.get(mono_transaction = trans_info)
